@@ -1,0 +1,46 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id String @id @default(uuid())
+  email String @unique
+  name String
+  password String
+  role Role @default(USER)
+  religion Religion[]
+}
+
+enum Role{
+  USER
+  ADMIN
+}
+
+model Religion{
+id Int @id @default(autoincrement())
+name String
+category ReligionCategory
+subCategory String?
+location String
+contact String
+imageUrl String
+createdAt DateTime @default(now())
+user User @relation(fields: [userId], references: [id])
+userId String
+}
+
+enum ReligionCategory{
+  CHRISTIANITY
+  ISLAMIC
+}
+
+
+
+
