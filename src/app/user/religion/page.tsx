@@ -1,13 +1,17 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import ReligionFormAdd from "./_components/religion_add_form";
 import db from "@/Repository/db";
-import { Card } from "@/components/ui/card";
+import { cookies } from "next/headers";
+import { Suspense } from "react";
+import Religion from "./_components/religion";
 
-export default function Religion() {
+export default function ReligionagPage() {
     return (
         <main>
             <ReligionFormAdd />
-            <ReligionSkeleton />
+            <Suspense fallback={<ReligionSkeleton />}>
+                <ReligionList />
+           </Suspense>
         </main>
     )
 }
@@ -28,13 +32,19 @@ export async function ReligionSkeleton(){
 }
 
 export async function ReligionList() {
-    const religions = await db.religion.findMany();
-
+    const id = JSON.parse(cookies().get("user")!.value).id;
+    const religions = await db.religion.findMany({
+        where: {
+            user: {
+                id: id,
+            }
+        }
+    });
     return (
-        <div>
-            <Card>
-                
-            </Card>
-        </div>
-    )
+      <div className="grid grid-cols-2 gap-10 m-[50px]">
+        {religions.map((religion) => (
+         <Religion religion={religion} />
+        ))}
+      </div>
+    );
 }

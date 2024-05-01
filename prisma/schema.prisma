@@ -34,11 +34,25 @@ imageUrl String
 createdAt DateTime @default(now())
 user User @relation(fields: [userId], references: [id])
 userId String
+event Event[]
 }
 
 enum ReligionCategory{
   CHRISTIANITY
   ISLAMIC
+}
+
+model Event{
+  id Int @id @default(autoincrement())
+  name  String
+  startTime String
+  endTime  String
+  startDate String?
+  endDate  String?
+  location String?
+  description String?
+  religion Religion @relation(fields: [religionId], references: [id])
+  religionId Int
 }
 
 

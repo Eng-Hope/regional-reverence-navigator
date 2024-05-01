@@ -1,6 +1,6 @@
 import { User } from './../../node_modules/.prisma/client/index.d';
 "use server";
-import { z } from "zod";
+import { any, z } from "zod";
 import db from "./db";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -201,4 +201,75 @@ export async function addReligion(prev: unknown, formData: FormData) {
     redirect("/user/religion?status=done");
   }
   redirect("/user/religion?status=error");
+}
+
+
+
+export async function addEventFuc(prev:unknown ,formData: FormData) {
+
+   const addSchema = z.object({
+     name: z
+       .string()
+       .min(1, { message: "name must have one or more characters" }),
+     startTime: z.string().min(2, { message: "required" }),
+     endTime: z.string().min(1, { message: "required" }),
+     startDate: z.string().optional(),
+     endDate: z.string().optional(),
+     location: z.string().optional(),
+     description: z.string().optional(),
+     religionId: z.string(),
+   });
+   const results = addSchema.safeParse(Object.fromEntries(formData.entries()));
+
+   if (results.success === false) {
+     return results.error.formErrors.fieldErrors;
+   }
+  
+  const data = results.data;
+  let isCreated = false;
+  try {
+    const religionId = Number(data.religionId)
+      await db.event.create({
+      data: {
+        name: data.name,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        location: data.location,
+        description: data.description,
+        religion: {
+          connect: {
+            id: religionId
+          },
+        },
+      },
+    });
+    isCreated = true;
+  } catch (e) {
+    console.log(e);
+  }
+
+  if (isCreated) {
+    redirect(`/user/religion/${data.religionId}?status=done`);
+  }
+  redirect(`/user/religion/${data.religionId}?status=done`);
+}
+
+
+export async function getReligion() {
+  const religions = await db.religion.findMany(
+    // {
+    //   where: {
+    //     OR: [
+    //       {
+    //         name: {
+    //           contains: `${name}`,
+    //         },
+    //       },
+    //     ],
+    //   },
+    // }
+  );
+  return religions;
 }
