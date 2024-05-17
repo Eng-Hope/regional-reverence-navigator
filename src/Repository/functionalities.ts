@@ -1,4 +1,4 @@
-import { User } from './../../node_modules/.prisma/client/index.d';
+import { User, Role } from './../../node_modules/.prisma/client/index.d';
 "use server";
 import { any, z } from "zod";
 import db from "./db";
@@ -43,7 +43,6 @@ export async function addUser(prev: unknown, formData: FormData) {
   return redirect("/admin/users?status=error");
 }
 
-
 export async function signUp(prev: unknown, formData: FormData) {
   const schema = z.object({
     email: z.string().email(),
@@ -81,7 +80,6 @@ export async function signUp(prev: unknown, formData: FormData) {
   return redirect("/signup?status=error");
 }
 
-
 export async function deleteUser(userId: String) {
   try {
     await db.user.delete({
@@ -108,9 +106,11 @@ export async function login(prev: unknown, formData: FormData) {
     return result.error.formErrors.fieldErrors;
   }
 
-  const user = await db.user.findFirst({
-    where:{email: result.data.email, password: result.data.password}
-  })
+  const user = await db.user.findUnique({
+    where: { email: result.data.email, password: result.data.password }
+  });
+
+  console.log(user);
 
   if (!user) {
     redirect('/login?status=error');
@@ -123,7 +123,15 @@ export async function login(prev: unknown, formData: FormData) {
 }
 
 export async function getUser(userId: String) {
-  const user = await db.user.findFirst({
+  const user = await db.user.findUnique({
+    select: {
+      email: true,
+      id: true,
+      name: true,
+      profilePicture:true,
+      role:true
+      
+    },
     where:{id: userId.toString()}
   })
   return user;
@@ -133,8 +141,6 @@ export async function logout() {
   cookies().delete("user");
   redirect("/login");
 }
-
-
 
 export async function addReligion(prev: unknown, formData: FormData) {
     const fileSchema = z.instanceof(File, { message: "Required" });
@@ -203,8 +209,6 @@ export async function addReligion(prev: unknown, formData: FormData) {
   redirect("/user/religion?status=error");
 }
 
-
-
 export async function addEventFuc(prev:unknown ,formData: FormData) {
 
    const addSchema = z.object({
@@ -256,7 +260,6 @@ export async function addEventFuc(prev:unknown ,formData: FormData) {
   redirect(`/user/religion/${data.religionId}?status=done`);
 }
 
-
 export async function getReligion() {
   const religions = await db.religion.findMany(
     // {
@@ -272,4 +275,61 @@ export async function getReligion() {
     // }
   );
   return religions;
+}
+
+export async function changeProfile(prev: unknown, formData:FormData) {
+  const fileSchema = z.instanceof(File, { message: "Required" });
+  const imageSchema = fileSchema.refine(
+    (file) => file.size === 0 || file.type.startsWith("image/")
+  );
+  const addSchema = z.object({
+    image: imageSchema.refine((file) => file.size > 0, "Required"),
+  });
+  
+  const results = addSchema.safeParse(Object.fromEntries(formData.entries()));
+
+  if (results.success === false) {
+    return results.error.formErrors.fieldErrors;
+  }
+
+  const user = await JSON.parse(cookies().get("user")!.value);
+  const data = results.data;
+
+  let isCreated = false;
+  let imagePath;
+  try {
+    await fs.mkdir("public/profile/images", { recursive: true });
+    imagePath = `/profile/images/${crypto.randomUUID()}-${data.image.name}`;
+    await fs.writeFile(
+      `public${imagePath}`,
+      Buffer.from(await data.image.arrayBuffer())
+    );
+   
+    await db.user.update({
+      where: { id: user.id },
+      data: {
+        profilePicture: imagePath
+      }
+    })
+
+    isCreated = true;
+  } catch (e) {
+    fs.unlink(`public${imagePath}`);
+    console.log(e);
+  }
+
+  if (user.role === "ADMIN") {
+ if (isCreated) {
+   redirect("/admin/profile?status=done");
+ }
+ redirect("/admin/profile?status=error"); 
+  }
+  else if (user.role === "USER") { 
+ if (isCreated) {
+   redirect("/user/profile?status=done");
+ }
+ redirect("/user/profile?status=error"); 
+  }
+
+ 
 }

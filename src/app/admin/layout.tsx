@@ -16,11 +16,10 @@ export default function AdminLayout({
     return (
       <>
         <NavBar>
-          <NavBarLink href="/admin">Dashboard</NavBarLink>
+          <NavBarLink href="/admin">Home</NavBarLink>
           <NavBarLink href="/admin/profile">Profile</NavBarLink>
           <NavBarLink href="/admin/users">Users</NavBarLink>
           <NavBarLink href="/admin/religions">Religions</NavBarLink>
-          <NavBarLink href="/">Home</NavBarLink>
           <Button onClick={async () => {
             await logout();
           }}

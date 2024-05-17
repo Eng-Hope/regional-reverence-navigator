@@ -11,14 +11,26 @@ import {
 } from "@/components/ui/table";
 import { getUser } from "@/Repository/functionalities";
 import { cookies } from "next/headers";
+import Image from "next/image";
+import ProfilePictureForm from "./_components/profile_change";
 
 export default async function Profile() {
   const user = await getUser(JSON.parse(cookies().get("user")!.value).id);
 
   return (
-    <main>
-      <h1 className="ml-[240px] mt-[110px] text-3xl">User Profile</h1>
-      <Card className="w-[1000px] absolute top-[400px] left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <main className="flex items-center justify-center flex-col gap-3 mt-10">
+      <div className="flex items-center gap-5 self-start ml-[220px] mt-[20px] relative">
+        <Image
+          className="rounded-[50%] w-[100px] h-[100px]"
+          src={user!.profilePicture}
+          width={100}
+          height={100}
+          alt="profile"
+        ></Image>
+        <h1 className="text-3xl">{user!.name}</h1>
+        <ProfilePictureForm />
+      </div>
+      <Card className="w-[1000px]">
         <Table className="h-[350px] text-xl">
           <TableBody>
             <TableRow>
