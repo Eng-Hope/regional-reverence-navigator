@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { addReligion, changeProfile } from "@/Repository/functionalities";
+import db from "@/Repository/db";
+import { addReligion, changeProfile, getUser } from "@/Repository/functionalities";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
@@ -54,9 +55,30 @@ export default function ProfilePictureForm() {
               ""
             )}
             <h1 className=" text-2xl">New Picture</h1>
-            <Label className="text-xl">Image</Label>
+            <Label className="text-xl">Email</Label>
             <Input
               required
+              className="text-xl"
+              type="email"
+              placeholder="new email"
+              name="email"
+            ></Input>
+            {errors?.email && (
+              <div className="text-destructive">{errors.email}</div>
+            )}
+            <Label className="text-xl">Name</Label>
+            <Input
+              required
+              className="text-xl"
+              type="text"
+              placeholder="new name"
+              name="name"
+            ></Input>
+            {errors?.name && (
+              <div className="text-destructive">{errors.name}</div>
+            )}
+            <Label className="text-xl">Image</Label>
+            <Input
               className="text-xl"
               type="file"
               placeholder="Upload image of your religion"

@@ -13,9 +13,12 @@ import { getUser } from "@/Repository/functionalities";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import ProfilePictureForm from "./_components/profile_change";
+import User from "../page";
+
 
 export default async function Profile() {
   const user = await getUser(JSON.parse(cookies().get("user")!.value).id);
+
 
   return (
     <main className="flex items-center justify-center flex-col gap-3 mt-10">

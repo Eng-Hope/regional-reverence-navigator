@@ -261,30 +261,18 @@ export async function addEventFuc(prev:unknown ,formData: FormData) {
 }
 
 export async function getReligion() {
-  const religions = await db.religion.findMany(
-    // {
-    //   where: {
-    //     OR: [
-    //       {
-    //         name: {
-    //           contains: `${name}`,
-    //         },
-    //       },
-    //     ],
-    //   },
-    // }
-  );
+  const religions = await db.religion.findMany();
   return religions;
 }
 
 export async function changeProfile(prev: unknown, formData:FormData) {
-  const fileSchema = z.instanceof(File, { message: "Required" });
-  const imageSchema = fileSchema.refine(
-    (file) => file.size === 0 || file.type.startsWith("image/")
-  );
+  const imageSchema = z.instanceof(File).optional();
   const addSchema = z.object({
-    image: imageSchema.refine((file) => file.size > 0, "Required"),
+    name: z.string().optional(),
+    email: z.string().optional(),
+    image: imageSchema,
   });
+  console.log(formData);
   
   const results = addSchema.safeParse(Object.fromEntries(formData.entries()));
 
@@ -298,23 +286,39 @@ export async function changeProfile(prev: unknown, formData:FormData) {
   let isCreated = false;
   let imagePath;
   try {
-    await fs.mkdir("public/profile/images", { recursive: true });
-    imagePath = `/profile/images/${crypto.randomUUID()}-${data.image.name}`;
-    await fs.writeFile(
-      `public${imagePath}`,
-      Buffer.from(await data.image.arrayBuffer())
-    );
-   
-    await db.user.update({
-      where: { id: user.id },
-      data: {
-        profilePicture: imagePath
-      }
-    })
 
+    if (data.image?.name != undefined) {
+await fs.mkdir("public/profile/images", { recursive: true });
+imagePath = `/profile/images/${crypto.randomUUID()}-${data.image.name}`;
+await fs.writeFile(
+  `public${imagePath}`,
+  Buffer.from(await data.image.arrayBuffer())
+);
+
+await db.user.update({
+  where: { id: user.id },
+  data: {
+    email: data.email,
+    name: data.name,
+    profilePicture: imagePath,
+  },
+});
+    }
+    else if (data.image?.name === undefined) {
+      await db.user.update({
+        where: { id: user.id },
+        data: {
+          email: data.email,
+          name: data.name,
+        },
+      });
+    }
     isCreated = true;
+
   } catch (e) {
-    fs.unlink(`public${imagePath}`);
+    if (data.image?.name != undefined) {
+      fs.unlink(`public${imagePath}`);
+    }
     console.log(e);
   }
 

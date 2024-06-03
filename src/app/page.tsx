@@ -127,6 +127,22 @@ export function HomeNav() {
 function ReligionSearch({ count, setCount }: WidgetProps) {
   const [religions, setReligions] = useState<religion[] | null>(null);
   const [name, setName] = useState("");
+  const [allReligions, setAllReligions] = useState<religion[] | null>(null);
+
+  function handleClick(religionId: { religionId: number}) { 
+    alert('hey');
+  }
+
+
+  useEffect(() => {
+    async function fecthReligion() {
+          const religion = await getReligion();
+       setAllReligions(religion);
+    }
+    fecthReligion();
+  }, []);
+
+
 
   useEffect(() => {
     async function getData() {
@@ -163,6 +179,19 @@ function ReligionSearch({ count, setCount }: WidgetProps) {
         <i className="bx bx-search absolute mr-[750px] text-[30px]"></i>
       </section>
       <ToggleScreen count={count} setCount={setCount} />
+      <marquee>
+        <div className="flex gap-[200px] mt-10">
+          {allReligions &&
+            allReligions.map((religion) => (
+              <Image
+                height={100}
+                width={250}
+                alt="religion"
+                src={religion.imageUrl}
+              ></Image>
+            ))}
+        </div>
+      </marquee>
       <section className="grid grid-cols-2 gap-[100px] p-[50px] mt-[80px]">
         {religions &&
           religions.map((religion) => (
