@@ -28,7 +28,7 @@ export default function ReligionFormAdd() {
     <>
       <div className=" px-[40px] py-[20px]">
         <section className="flex justify-between">
-          <h1 className=" text-2xl">Registerd Religions</h1>
+          <h1 className=" text-2xl"> </h1>
           <Button
             className="text-lg"
             onClick={() => {

@@ -41,7 +41,7 @@ export async function ReligionList() {
         }
     });
     return (
-      <div className="grid grid-cols-2 gap-10 m-[50px]">
+      <div className="grid grid-cols-1 gap-10 m-[50px]">
         {religions.map((religion) => (
          <Religion religion={religion} />
         ))}

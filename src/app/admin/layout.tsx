@@ -19,7 +19,6 @@ export default function AdminLayout({
           <NavBarLink href="/admin">Home</NavBarLink>
           <NavBarLink href="/admin/profile">Profile</NavBarLink>
           <NavBarLink href="/admin/users">Users</NavBarLink>
-          <NavBarLink href="/admin/religions">Religions</NavBarLink>
           <Button onClick={async () => {
             await logout();
           }}

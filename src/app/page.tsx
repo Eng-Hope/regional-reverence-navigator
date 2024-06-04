@@ -176,7 +176,7 @@ function ReligionSearch({ count, setCount }: WidgetProps) {
           className="pl-[100px] text-2xl h-[50px]"
           placeholder="Search"
         />
-        <i className="bx bx-search absolute mr-[750px] text-[30px]"></i>
+        <i className="bx bx-search absolute ml-[750px] text-[30px]"></i>
       </section>
       <ToggleScreen count={count} setCount={setCount} />
       <marquee>
@@ -192,6 +192,9 @@ function ReligionSearch({ count, setCount }: WidgetProps) {
             ))}
         </div>
       </marquee>
+      <div className="flex justify-center items-center mt-10">
+        <Label className=" text-3xl text-primary">This service</Label>
+      </div>
       <section className="grid grid-cols-2 gap-[100px] p-[50px] mt-[80px]">
         {religions &&
           religions.map((religion) => (

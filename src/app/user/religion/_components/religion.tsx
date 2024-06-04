@@ -29,7 +29,7 @@ export type religion = {
 
 export default function Religion({ religion }: {religion: religion}) {
   return (
-    <Card key={religion.id} className="w-[90%]">
+    <Card key={religion.id} className="w-[60%]">
       <div className="flex justify-between pr-5">
         <CardHeader>
           <div className="flex flex-col gap-3">
@@ -50,7 +50,7 @@ export default function Religion({ religion }: {religion: religion}) {
         <Image
           src={religion.imageUrl}
           alt="image"
-          width={900}
+          width={600}
           height={90}
         ></Image>
       </CardContent>

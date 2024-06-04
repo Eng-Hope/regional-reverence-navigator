@@ -63,7 +63,7 @@ export default async function ReligionDescription({
                 <Label>Contact: </Label> {religion.contact}
               </div>
               <Image
-                className="w-screen"
+                className="w-[50%]"
                 src={religion.imageUrl}
                 width={100}
                 height={100}
