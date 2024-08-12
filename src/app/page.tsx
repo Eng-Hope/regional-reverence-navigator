@@ -174,6 +174,7 @@ function ReligionSearch({ count, setCount }: WidgetProps) {
           value={name}
           onChange={handleChange}
           className="pl-[100px] text-2xl h-[50px]"
+
           placeholder="Search"
         />
         <i className="bx bx-search absolute ml-[750px] text-[30px]"></i>
